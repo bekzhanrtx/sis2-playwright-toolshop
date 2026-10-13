@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.tools/
+*.zip
+.DS_Store
+.env
+screenshots/discover-*.png
+screenshots/discover-*.jpg

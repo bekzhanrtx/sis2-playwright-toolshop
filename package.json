@@ -1,0 +1,19 @@
+{
+  "name": "sis2-playwright-toolshop",
+  "version": "1.0.0",
+  "description": "SIS 2 — Playwright E2E tests for Practice Software Testing (Toolshop)",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report",
+    "test:with-node": "node ./scripts/run-with-portable-node.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^22.10.0"
+  }
+}
