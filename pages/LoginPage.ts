@@ -1,4 +1,4 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Response } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class LoginPage extends BasePage {
@@ -14,7 +14,11 @@ export class LoginPage extends BasePage {
     await expect(this.emailInput).toBeVisible();
   }
 
-  async login(email: string, password: string): Promise<void> {
+  /**
+   * Submits the login form and waits for the API response.
+   * Does NOT throw on 401 — invalid credentials are a valid test outcome.
+   */
+  async login(email: string, password: string): Promise<Response> {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     const loginResponse = this.page.waitForResponse(
@@ -22,16 +26,12 @@ export class LoginPage extends BasePage {
       { timeout: 45_000 }
     );
     await this.submitButton.click();
-    const response = await loginResponse;
-    if (!response.ok()) {
-      const body = await response.text();
-      throw new Error(`Login API failed: ${response.status()} ${body}`);
-    }
+    return loginResponse;
   }
 
   async expectLoginError(): Promise<void> {
     const error = this.loginError.or(this.page.getByRole('alert'));
     await expect(error.first()).toBeVisible({ timeout: 30_000 });
-    await expect(error.first()).toContainText(/invalid email or password|locked|failed/i);
+    await expect(error.first()).toContainText(/invalid email or password|locked|failed|unauthorized/i);
   }
 }

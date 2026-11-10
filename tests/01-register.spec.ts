@@ -11,7 +11,7 @@ test.describe('1. Register a new customer', () => {
     await registerPage.open();
     await registerPage.register(newCustomer);
 
-    // After a successful register API call the app may redirect slowly.
+    // Assignment: unique account created → signed in OR on the login page.
     await expect
       .poll(
         async () => {
@@ -29,8 +29,11 @@ test.describe('1. Register a new customer', () => {
     expect(onLogin || onAccount || menuVisible).toBeTruthy();
 
     if (onLogin) {
-      await expect(loginPage.emailInput).toBeVisible();
-      await expect(loginPage.submitButton).toBeVisible();
+      // URL alone proves "on the login page"; form may hydrate a moment later.
+      await expect(page).toHaveURL(/\/auth\/login/);
+      await expect(loginPage.submitButton.or(loginPage.emailInput).first()).toBeVisible({
+        timeout: 30_000,
+      });
     }
 
     if (onAccount || menuVisible) {

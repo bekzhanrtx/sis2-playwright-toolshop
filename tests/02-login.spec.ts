@@ -7,7 +7,11 @@ test.describe('2. Log in', () => {
     registeredCustomer,
   }) => {
     await loginPage.open();
-    await loginPage.login(registeredCustomer.email, registeredCustomer.password);
+    const response = await loginPage.login(
+      registeredCustomer.email,
+      registeredCustomer.password
+    );
+    expect(response.ok(), await response.text()).toBeTruthy();
 
     await accountPage.expectLoaded();
     await accountPage.expectSignedInAs(registeredCustomer.firstName);
@@ -18,7 +22,8 @@ test.describe('2. Log in', () => {
     page,
   }) => {
     await loginPage.open();
-    await loginPage.login('nobody.invalid@example.com', 'WrongPass1!');
+    const response = await loginPage.login('nobody.invalid@example.com', 'WrongPass1!');
+    expect(response.status()).toBe(401);
 
     await loginPage.expectLoginError();
     await expect(page).not.toHaveURL(/\/account/);

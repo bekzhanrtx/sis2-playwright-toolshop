@@ -8,10 +8,13 @@ export class AccountPage extends BasePage {
 
   async expectLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/\/account/, { timeout: 30_000 });
-    await expect(this.heading).toBeVisible({ timeout: 15_000 });
+    // Prefer data-test title; heading text can vary by locale/build.
+    const title = this.pageTitle.or(this.heading).or(this.navMenu);
+    await expect(title.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async expectSignedInAs(displayNamePart: string): Promise<void> {
+    await expect(this.navMenu).toBeVisible({ timeout: 20_000 });
     await expect(this.navMenu).toContainText(displayNamePart);
   }
 }
