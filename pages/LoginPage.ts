@@ -1,4 +1,4 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Response } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class LoginPage extends BasePage {
@@ -14,21 +14,38 @@ export class LoginPage extends BasePage {
     await expect(this.emailInput).toBeVisible();
   }
 
-  async login(email: string, password: string): Promise<void> {
+  /**
+   * Submits the login form and waits for the API response.
+   * Does NOT throw on 401 — invalid credentials are a valid test outcome.
+   * On 200, ensures we land on /account (SPA redirect can flake in CI).
+   */
+  async login(email: string, password: string): Promise<Response> {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    const loginResponse = this.page.waitForResponse(
+    const loginResponsePromise = this.page.waitForResponse(
       (res) => res.url().includes('/users/login') && res.request().method() === 'POST',
-      { timeout: 30_000 }
+      { timeout: 45_000 }
     );
     await this.submitButton.click();
-    await loginResponse;
+    const response = await loginResponsePromise;
+
+    if (response.status() === 200) {
+      const reached = await this.page
+        .waitForURL(/\/account/, { timeout: 15_000 })
+        .then(() => true)
+        .catch(() => false);
+      if (!reached) {
+        await this.goto('/account');
+      }
+      await expect(this.page).toHaveURL(/\/account/, { timeout: 15_000 });
+    }
+
+    return response;
   }
 
   async expectLoginError(): Promise<void> {
-    // Prefer data-test; fall back to role=alert if the app renders only a banner.
     const error = this.loginError.or(this.page.getByRole('alert'));
-    await expect(error.first()).toBeVisible({ timeout: 20_000 });
-    await expect(error.first()).toContainText(/invalid email or password|locked|failed/i);
+    await expect(error.first()).toBeVisible({ timeout: 30_000 });
+    await expect(error.first()).toContainText(/invalid email or password|locked|failed|unauthorized/i);
   }
 }

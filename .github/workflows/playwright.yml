@@ -36,7 +36,8 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
-          BASE_URL: ${{ vars.BASE_URL }}
+          # Only override when the repo Variable is set; empty string breaks baseURL.
+          BASE_URL: ${{ vars.BASE_URL != '' && vars.BASE_URL || 'https://practicesoftwaretesting.com' }}
 
       - name: Upload blob report
         if: ${{ !cancelled() }}
