@@ -39,7 +39,7 @@ export function createCustomer(overrides: Partial<CustomerData> = {}): CustomerD
     state: 'Almaty',
     country: 'KZ',
     phone: '5551234567',
-    email: `sis2.${suffix}@mailinator.com`,
+    email: `sis2.${suffix}@test.com`,
     password: uniquePassword(),
     ...overrides,
   };

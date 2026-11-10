@@ -19,16 +19,19 @@ export class LoginPage extends BasePage {
     await this.passwordInput.fill(password);
     const loginResponse = this.page.waitForResponse(
       (res) => res.url().includes('/users/login') && res.request().method() === 'POST',
-      { timeout: 30_000 }
+      { timeout: 45_000 }
     );
     await this.submitButton.click();
-    await loginResponse;
+    const response = await loginResponse;
+    if (!response.ok()) {
+      const body = await response.text();
+      throw new Error(`Login API failed: ${response.status()} ${body}`);
+    }
   }
 
   async expectLoginError(): Promise<void> {
-    // Prefer data-test; fall back to role=alert if the app renders only a banner.
     const error = this.loginError.or(this.page.getByRole('alert'));
-    await expect(error.first()).toBeVisible({ timeout: 20_000 });
+    await expect(error.first()).toBeVisible({ timeout: 30_000 });
     await expect(error.first()).toContainText(/invalid email or password|locked|failed/i);
   }
 }

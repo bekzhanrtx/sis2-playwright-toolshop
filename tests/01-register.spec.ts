@@ -11,12 +11,16 @@ test.describe('1. Register a new customer', () => {
     await registerPage.open();
     await registerPage.register(newCustomer);
 
-    // App may either auto-sign-in or redirect to the login form.
-    await Promise.race([
-      page.waitForURL(/\/auth\/login/, { timeout: 30_000 }),
-      page.waitForURL(/\/account/, { timeout: 30_000 }),
-      accountPage.navMenu.waitFor({ state: 'visible', timeout: 30_000 }),
-    ]);
+    // After a successful register API call the app may redirect slowly.
+    await expect
+      .poll(
+        async () => {
+          if (/\/auth\/login|\/account/.test(page.url())) return true;
+          return accountPage.navMenu.isVisible().catch(() => false);
+        },
+        { timeout: 45_000 }
+      )
+      .toBeTruthy();
 
     const onLogin = /\/auth\/login/.test(page.url());
     const onAccount = /\/account/.test(page.url());

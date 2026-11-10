@@ -25,7 +25,10 @@ export class RegisterPage extends BasePage {
   async fillForm(data: CustomerData): Promise<void> {
     await this.firstName.fill(data.firstName);
     await this.lastName.fill(data.lastName);
+    // type=date is more reliable with YYYY-MM-DD via fill + blur
+    await this.dateOfBirth.fill('');
     await this.dateOfBirth.fill(data.dateOfBirth);
+    await this.dateOfBirth.blur();
     await this.street.fill(data.street);
     await this.houseNumber.fill(data.houseNumber);
     await this.postalCode.fill(data.postalCode);
@@ -39,9 +42,10 @@ export class RegisterPage extends BasePage {
 
   async register(data: CustomerData): Promise<void> {
     await this.fillForm(data);
+    await this.submitButton.scrollIntoViewIfNeeded();
     const registerResponse = this.page.waitForResponse(
       (res) => res.url().includes('/users/register') && res.request().method() === 'POST',
-      { timeout: 30_000 }
+      { timeout: 45_000 }
     );
     await this.submitButton.click();
     const response = await registerResponse;

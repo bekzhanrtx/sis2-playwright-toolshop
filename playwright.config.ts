@@ -14,7 +14,7 @@ export default defineConfig({
   fullyParallel: true, // shards split tests, not whole files
   forbidOnly: isCI, // forgotten test.only fails CI
   retries: isCI ? 2 : 1, // live demo site can flake under parallel load
-  workers: isCI ? 2 : undefined, // GitHub runners have 2–4 vCPUs
+  workers: isCI ? 1 : undefined, // 1 worker/shard — less load on the live demo API
   timeout: 90_000,
   expect: { timeout: 20_000 },
   reporter: isCI
