@@ -11,7 +11,8 @@ test.describe('2. Log in', () => {
       registeredCustomer.email,
       registeredCustomer.password
     );
-    expect(response.ok(), await response.text()).toBeTruthy();
+    // Do not call response.text() — successful login navigates away and drops the body.
+    expect(response.status()).toBe(200);
 
     await accountPage.expectLoaded();
     await accountPage.expectSignedInAs(registeredCustomer.firstName);
