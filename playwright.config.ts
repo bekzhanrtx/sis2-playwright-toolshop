@@ -28,7 +28,8 @@ export default defineConfig({
         ['html', { open: 'never' }],
       ],
   use: {
-    baseURL: process.env.BASE_URL ?? 'https://practicesoftwaretesting.com',
+    // Use || so an empty Actions variable does not wipe the default URL.
+    baseURL: process.env.BASE_URL || 'https://practicesoftwaretesting.com',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: isCI ? 'retain-on-failure' : 'off',
