@@ -10,13 +10,25 @@ export class HomePage extends BasePage {
   readonly cartQuantity: Locator = this.byTestId('cart-quantity');
 
   async open(): Promise<void> {
+    // Catalog is API-driven; under parallel load it can take longer than a blank shell.
+    const productsLoaded = this.page
+      .waitForResponse(
+        (res) =>
+          res.url().includes('/products') &&
+          res.request().method() === 'GET' &&
+          res.ok(),
+        { timeout: 30_000 }
+      )
+      .catch(() => null);
+
     await this.goto('/');
-    await expect(this.productCards.first()).toBeVisible();
+    await productsLoaded;
+    await expect(this.productCards.first()).toBeVisible({ timeout: 30_000 });
   }
 
   /** Product IDs change between deploys — always pick from the live grid. */
   async openProductByIndex(index: number): Promise<void> {
-    await expect(this.productCards.nth(index)).toBeVisible();
+    await expect(this.productCards.nth(index)).toBeVisible({ timeout: 30_000 });
     await this.productCards.nth(index).click();
   }
 

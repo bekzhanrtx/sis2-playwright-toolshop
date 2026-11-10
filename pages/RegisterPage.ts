@@ -39,6 +39,14 @@ export class RegisterPage extends BasePage {
 
   async register(data: CustomerData): Promise<void> {
     await this.fillForm(data);
+    const registerResponse = this.page.waitForResponse(
+      (res) => res.url().includes('/users/register') && res.request().method() === 'POST',
+      { timeout: 30_000 }
+    );
     await this.submitButton.click();
+    const response = await registerResponse;
+    if (!response.ok()) {
+      throw new Error(`Register API failed: ${response.status()} ${await response.text()}`);
+    }
   }
 }

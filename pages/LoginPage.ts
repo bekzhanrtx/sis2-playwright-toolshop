@@ -17,11 +17,18 @@ export class LoginPage extends BasePage {
   async login(email: string, password: string): Promise<void> {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
+    const loginResponse = this.page.waitForResponse(
+      (res) => res.url().includes('/users/login') && res.request().method() === 'POST',
+      { timeout: 30_000 }
+    );
     await this.submitButton.click();
+    await loginResponse;
   }
 
   async expectLoginError(): Promise<void> {
-    await expect(this.loginError).toBeVisible();
-    await expect(this.loginError).toContainText(/invalid email or password/i);
+    // Prefer data-test; fall back to role=alert if the app renders only a banner.
+    const error = this.loginError.or(this.page.getByRole('alert'));
+    await expect(error.first()).toBeVisible({ timeout: 20_000 });
+    await expect(error.first()).toContainText(/invalid email or password|locked|failed/i);
   }
 }

@@ -2,10 +2,15 @@ node_modules/
 test-results/
 playwright-report/
 blob-report/
+all-blob-reports/
+reports/
+.act-artifacts/
 playwright/.cache/
 .tools/
 *.zip
 .DS_Store
 .env
+.secrets
 screenshots/discover-*.png
 screenshots/discover-*.jpg
+.idea/

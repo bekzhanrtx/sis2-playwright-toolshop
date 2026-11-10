@@ -13,9 +13,9 @@ test.describe('1. Register a new customer', () => {
 
     // App may either auto-sign-in or redirect to the login form.
     await Promise.race([
-      page.waitForURL(/\/auth\/login/, { timeout: 15_000 }),
-      page.waitForURL(/\/account/, { timeout: 15_000 }),
-      accountPage.navMenu.waitFor({ state: 'visible', timeout: 15_000 }),
+      page.waitForURL(/\/auth\/login/, { timeout: 30_000 }),
+      page.waitForURL(/\/account/, { timeout: 30_000 }),
+      accountPage.navMenu.waitFor({ state: 'visible', timeout: 30_000 }),
     ]);
 
     const onLogin = /\/auth\/login/.test(page.url());
