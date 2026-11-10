@@ -11,6 +11,7 @@ test.describe('2. Log in', () => {
       registeredCustomer.email,
       registeredCustomer.password
     );
+    // Auth success is proven by the login API; UI may still sit behind Cloudflare in CI.
     expect(response.status()).toBe(200);
 
     await accountPage.expectLoaded();
