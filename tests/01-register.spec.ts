@@ -11,7 +11,6 @@ test.describe('1. Register a new customer', () => {
     await registerPage.register(newCustomer);
 
     // Assignment: unique account created → signed in OR on the login page.
-    // URL / nav-menu is enough; the login form markup can vary after redirect.
     await expect
       .poll(
         async () => {
